@@ -83,6 +83,7 @@ app.use(expressWinston.errorLogger({
     })
   ]
 }))
+
 // 错误页面
 app.use(function (err, req, res, next) {
   console.error(err)
@@ -90,7 +91,12 @@ app.use(function (err, req, res, next) {
   res.redirect('/posts')
 })
 
-// 监听端口，启动程序
-app.listen(config.port, function () {
-  console.log(`${pkg.name} listening on port ${config.port}`)
-})
+if (module.parent) {
+  // 被 require，则导出 app
+  module.exports = app
+} else {
+  // 监听端口，启动程序
+  app.listen(config.port, function () {
+    console.log(`${pkg.name} listening on port ${config.port}`)
+  })
+}
