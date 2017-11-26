@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 
 const PostModel = require('../models/posts')
+const CommentModel = require('../models/comments')
 const checkLogin = require('../middlewares/check').checkLogin
 
 // GET /posts 所有用户或者特定用户的文章页
@@ -65,20 +66,23 @@ router.get('/:postId', function (req, res, next) {
   const postId = req.params.postId
 
   Promise.all([
-    PostModel.getPostById(postId),  // 获取文章信息
-    PostModel.incPv(postId)  // pv +1
+    PostModel.getPostById(postId), // 获取文章信息
+    CommentModel.getComments(postId), // 获取该文章所有留言
+    PostModel.incPv(postId)// pv 加 1
   ])
-    .then(function(result) {
-      const post = result[0]
-      if (!post) {
-        throw new Error('改文章不存在')
-      }
+  .then(function (result) {
+    const post = result[0]
+    const comments = result[1]
+    if (!post) {
+      throw new Error('该文章不存在')
+    }
 
-      res.render('post', {
-        post: post
-      })
+    res.render('post', {
+      post: post,
+      comments: comments
     })
-    .catch(next)
+  })
+  .catch(next)
 })
 
 // GET /posts/:postId/edit 更新文章页
