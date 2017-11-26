@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "istanbul cover _mocha"
+    "test": "nyc --reporter=html --reporter=text mocha",
+    "start": "pm2 start index.js --name 'blog'"
   },
   "repository": {
     "type": "git",
